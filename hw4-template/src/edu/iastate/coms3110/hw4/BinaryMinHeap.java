@@ -29,7 +29,24 @@ public class BinaryMinHeap<T> extends PurePriorityQueue<T> {
      */
     @Override
     public void add(T item) {
-        /* TODO */
+        this.heap.add(item);
+        int i = heap.size() - 1;
+        this.location.put(item, i);
+        while(i > 0)
+        {
+            int parent_i = (i - 1) / 2;
+            T a = this.heap.get(i), b = this.heap.get(parent_i);
+            if(this.comp.compare(a, b) < 0)
+            {
+                this.heap.set(i, b);
+                this.heap.set(parent_i, a);
+                this.location.put(b, i);
+                this.location.put(a, parent_i);
+                i = parent_i;
+                continue;
+            }
+            break;
+        }
     }
 
     /**
@@ -49,8 +66,44 @@ public class BinaryMinHeap<T> extends PurePriorityQueue<T> {
      */
     @Override
     public T extractMin() {
-        /* TODO */
-        return null;
+        T ret = null;
+        if(this.heap.size() > 0)
+        {
+            ret = this.heap.get(0);
+            T moved = this.heap.get(this.heap.size() - 1);
+            this.heap.set(0, moved);
+            this.heap.removeLast();
+            this.location.remove(ret);
+            this.location.put(moved, 0);
+            int n = this.heap.size();
+            int i = 0;
+            while(i < this.heap.size())
+            {
+                int ir = 2 * i + 1, il = 2 * i + 2, j = i;
+                if(ir >= n) break;
+                else if(il < n)
+                {
+                    j = this.comp.compare(this.heap.get(ir), this.heap.get(il)) < 0 ? ir : il;
+                }
+                else
+                {
+                    j = ir;
+                }
+
+                if(this.comp.compare(this.heap.get(j), this.heap.get(i)) < 0)
+                {
+                    T x = this.heap.get(j), y = this.heap.get(i);
+                    this.heap.set(j, y);
+                    this.heap.set(i, x);
+                    this.location.put(y, j);
+                    this.location.put(x, i);
+                    i = j;
+                    continue;
+                }
+                break;
+            }
+        }
+        return ret;
     }
 
     /**
@@ -62,6 +115,21 @@ public class BinaryMinHeap<T> extends PurePriorityQueue<T> {
      */
     @Override
     public void keyDecreased(T item) {
-        /* TODO */
+        int i = this.location.get(item);
+        while(i > 0)
+        {
+            int parent_i = (i - 1) / 2;
+            T a = this.heap.get(i), b = this.heap.get(parent_i);
+            if(this.comp.compare(a, b) < 0)
+            {
+                this.heap.set(i, b);
+                this.heap.set(parent_i, a);
+                this.location.put(b, i);
+                this.location.put(a, parent_i);
+                i = parent_i;
+                continue;
+            }
+            break;
+        }
     }
 }

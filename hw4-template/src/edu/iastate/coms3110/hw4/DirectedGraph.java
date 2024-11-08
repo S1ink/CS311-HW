@@ -140,13 +140,40 @@ public class DirectedGraph<V> implements Graph<V> {
      */
     @Override
     public Tuple<Map<V, Double>, Map<V, V>> dijkstras(V source, Map<Tuple<V, V>, Double> weights) {
-        if (!adjList.containsKey(source) || weights == null)
+        if (!adjList.containsKey(source) || weights == null || adjList.size() < 2)
             return null;
 
         Map<V, Double> dist = new HashMap<V, Double>();
         Map<V, V> pred = new HashMap<V, V>();
+        Set<V> in_heap = new HashSet<>();
+        BinaryMinHeap<V> min_heap = new BinaryMinHeap<>(
+            (V a, V b) -> dist.get(a) < dist.get(b) ? -1 : ((dist.get(b) < dist.get(a)) ? 1 : 0) );
 
-        /* TODO */
+        dist.put(source, 0.);
+        for(final V v : this.getVertices())
+        {
+            dist.putIfAbsent(v, Double.POSITIVE_INFINITY);
+            pred.put(v, null);
+            min_heap.add(v);
+            in_heap.add(v);
+        }
+
+        while(min_heap.size() > 0)
+        {
+            final V v = min_heap.extractMin();
+            in_heap.remove(v);
+            for(final V w : this.getNeighbors(v))
+            {
+                if(!in_heap.contains(w)) continue;
+                double new_dist = dist.get(v) + weights.get(Tuple.create(v, w));
+                if(dist.get(w) > new_dist)
+                {
+                    dist.put(w, new_dist);
+                    pred.put(w, v);
+                    min_heap.keyDecreased(w);
+                }
+            }
+        }
 
         return Tuple.create(dist, pred);
     }
