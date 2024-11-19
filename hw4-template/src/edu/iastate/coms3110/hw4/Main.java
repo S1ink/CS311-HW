@@ -176,6 +176,13 @@ public class Main {
             }
             System.out.println();
         }
+
+        System.out.println("\n----------------------------------------------\n");
+        Test1JUnit.testDijkstras();
+        Test2JUnit.testDijkstrasDisconnectedGraph();
+        Test3JUnit.testDijkstrasDisconnectedGraph();
+        Test4JUnit.testDijkstrasDisconnectedGraph();
+        Test5JUnit.testDijkstrasDisconnectedGraph();
     }
 
 }
